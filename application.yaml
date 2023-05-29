@@ -1,0 +1,17 @@
+app:
+  port: "37778"
+  host: "127.0.0.1"
+  name: "lk_flow"
+  timezone: "Asia/Shanghai"
+  language: "zh-CN"
+
+database:
+  multiple-datasource: false
+  host: "127.0.0.1"
+  port: "3306"
+  database: "lk_flow"
+  root: "root"
+  password: "root"
+
+systemEnv:
+  env: "dev"
