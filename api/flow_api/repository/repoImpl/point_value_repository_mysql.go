@@ -4,8 +4,10 @@ import (
 	"five.com/lk_flow/api/common"
 	"five.com/lk_flow/api/flow_api/api_model"
 	"five.com/lk_flow/api/flow_api/repository"
+	"five.com/lk_flow/api/panel_point"
 	"five.com/lk_flow/model"
 	"five.com/technical_center/core_library.git/log"
+	lib "five.com/technical_center/core_library.git/utils/repo"
 	"five.com/technical_center/core_library.git/utils/trans"
 	"gorm.io/gorm"
 )
@@ -18,6 +20,7 @@ func PointValueNewMysqlRepository() repository.PointValueRepository {
 }
 
 var participantRepo = ParticipantNewMysqlRepository()
+var pointRepo = panel_point.NewMysqlRepository()
 
 // BatchInsertPointValueInfos 批量新增流程节点值信息
 func (m PointValueRepositoryImpl) BatchInsertPointValueInfos(tx *gorm.DB, pointDetails []api_model.PointDetail) (pointDetailList []api_model.PointDetail) {
@@ -62,7 +65,7 @@ func (m PointValueRepositoryImpl) UpdatePointValueInfo(tx *gorm.DB, details []ap
 		if !resultStatus {
 			return false
 		}
-		if err := tx.Table(common.Participant.TableName()).Updates(pointValueInfo).Error; err != nil {
+		if err := tx.Table(common.PointValue.TableName()).Updates(pointValueInfo).Error; err != nil {
 			log.Error("更新节点信息错误: " + err.Error())
 			return false
 		}
@@ -77,10 +80,26 @@ func (m PointValueRepositoryImpl) DeletePointValueInfo(tx *gorm.DB, details []ap
 		if !resultStatus {
 			return false
 		}
-		if err := tx.Table(common.PointValue.TableName()).Where("id = ?", detail.Id).Delete(common.PointValue).Error; err != nil {
+		if err := tx.Table(common.PointValue.TableName()).Where("id = ?", detail.Id).Delete(&common.PointValue).Error; err != nil {
 			log.Error("删除节点信息错误: " + err.Error())
 			return false
 		}
 	}
 	return true
+}
+
+func (m PointValueRepositoryImpl) SelectPointValueInfoByApprovalCode(db *gorm.DB, approvalCode string) (nodeList []api_model.PointDetail) {
+	var pointDetailList []api_model.PointValueDetail
+	db.Table(common.PointValue.TableName()+" pv").Joins("LEFT JOIN "+common.PanelPoint.TableName()+" p on p.id=pv.point_id").
+		Where("approval_code = ?", approvalCode).Select(common.PointValue.GetAllColumWithAlias("pv") + ",p.point_type,p.examine_type").Scan(&pointDetailList)
+	nodeList = make([]api_model.PointDetail, len(pointDetailList))
+	trans.DeepCopy(pointDetailList, &nodeList)
+	for i := 0; i < len(nodeList); i++ {
+		nodeList[i].ParticipantInfos = participantRepo.SelectParticipantListByPointValueId(db, nodeList[i].Id, nil)
+		pointInfo := pointRepo.SelectSinglePanelPointInfoById(lib.ObtainCustomDb(), nodeList[i].PointId)
+		nodeList[i].ExamineType = pointInfo.ExamineType
+		nodeList[i].PointType = pointInfo.PointType
+		nodeList[i].PointName = pointInfo.PointName
+	}
+	return nodeList
 }

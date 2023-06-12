@@ -6,17 +6,16 @@ import (
 
 type ProcessGroups struct {
 	req.CommonModel
-	AppCode      string `json:"appCode,omitempty"`      // 应用编码
-	BusinessCode string `json:"businessCode,omitempty"` // 业务编码
-	ClientId     int64  `json:"-,omitempty"`            // 租户id
-	GroupName    string `json:"groupName,omitempty"`    // 分组名称
-	OrderNo      int64  `json:"orderNo,omitempty"`      // 分组排序
-	IsDefault    uint8  `json:"isDefault,omitempty"`    // 是否默认（1 是 2 否）
+	AppCode   string `json:"appCode,omitempty"`   // 应用编码
+	ClientId  int64  `json:"-,omitempty"`         // 租户id
+	GroupName string `json:"groupName,omitempty"` // 分组名称
+	OrderNo   int64  `json:"orderNo,omitempty"`   // 分组排序
+	IsDefault uint8  `json:"isDefault,omitempty"` // 是否默认（1 是 2 否）
 }
 
 // 定义列
 func (c *ProcessGroups) allColumn() []string {
-	columns := []string{"app_code", "business_code", "client_id", "group_name", "order_no", "is_default"}
+	columns := []string{"app_code", "client_id", "group_name", "order_no", "is_default"}
 	commonMdl := req.CommonModel{}
 	columns = append(columns, commonMdl.GetCommonModelColumns()...)
 	return columns

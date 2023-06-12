@@ -84,22 +84,10 @@ func (m MysqlRepository) InsertPanelPoint(tx *gorm.DB, info PanelPointDetail) in
 	trans.CopyFields(info, &panelPointInfo)
 	//判断是否为条件节点
 
-	// 修改前端所需的字段值
-	onlyWebUsePreviousStep := panelPointInfo.OnlyWebUsePreviousStep
-	panelPointInfo.OnlyWebUsePreviousStep = 0
-
 	if err := tx.Table(common.PanelPoint.TableName()).Create(&panelPointInfo).Error; err != nil {
 		log.Error("新增流程节点信息出错")
 		panic("服务器错误")
 	}
-
-	// QUESTION-BUG: 插入条件节点时，本身节点的上一个节点仅只有一条描述关系，且关系为新增加的那个关系。
-	panelPointInfo.OnlyWebUsePreviousStep = onlyWebUsePreviousStep
-	if panelPointInfo.OnlyWebUsePreviousStep != 0 && panelPointInfo.PointType != 4 {
-		updatePanelPointByCondition(tx, map[string]interface{}{"only_web_use_previous_step = ?": panelPointInfo.OnlyWebUsePreviousStep}, map[string]interface{}{"only_web_use_previous_step": panelPointInfo.Id})
-
-	}
-	updatePanelPointByCondition(tx, map[string]interface{}{"id = ?": panelPointInfo.Id}, map[string]interface{}{"only_web_use_previous_step": panelPointInfo.OnlyWebUsePreviousStep})
 
 	//节点类型为条件节点时不会记录该节点的关系，关系记录会与条件主体产生关联
 	createRelLogic(tx, info.RelMdl, panelPointInfo.Id, panelPointInfo.PointType, false)
@@ -115,7 +103,6 @@ func (m MysqlRepository) InsertPanelPoint(tx *gorm.DB, info PanelPointDetail) in
 			pointInfo.ConditionType = 2
 			pointInfo.PointType = 4
 			pointInfo.ProcessId = panelPointInfo.ProcessId
-			pointInfo.OnlyWebUsePreviousStep = panelPointInfo.OnlyWebUsePreviousStep
 			if err := tx.Table(common.PanelPoint.TableName()).Create(&pointInfo).Error; err != nil {
 				log.Error("新增流程节点信息出错")
 				panic("服务器错误")
@@ -157,6 +144,17 @@ func createRelInfo(tx *gorm.DB, relMdl rel.PointRelDesc) {
 
 // 创建节点关系信息
 func createRelLogic(tx *gorm.DB, relMdls []rel.PointRelDesc, pointId int64, pointType int8, pointIsFirstAdd bool) {
+	if len(relMdls) > 1 {
+		if relMdls[0].NextStep == relMdls[1].NextStep {
+			var nextStepRelMdlList []rel.PointRelDesc
+			lib.ObtainCustomDb().Table(common.PointRelDesc.TableName()).Where("point_id = ?", relMdls[0].NextStep).Scan(&nextStepRelMdlList)
+			for i := 1; i < len(nextStepRelMdlList); i++ {
+				conditionParams := make(map[string]interface{}, 0)
+				conditionParams["id = ?"] = nextStepRelMdlList[i].Id
+				deletePanelPointRelDescByConditionOnIds(tx, conditionParams)
+			}
+		}
+	}
 	for _, desc := range relMdls {
 		//var relMdl rel.PointRelDesc
 		//trans.DeepCopy(desc, &relMdl)
@@ -278,13 +276,7 @@ func (m MysqlRepository) DeletePanelPoint(tx *gorm.DB, ids []int64) {
 					(不动)A    id: 1     only_web_use_previous_step: 0
 					(不动)C	  id: 3		only_web_use_previous_step: 1
 		*/
-		// only_web_use_previous_step 该字段仅限于前端遍历使用
-		// 后端逻辑使用的是关系表：point_rel_desc
-		if panelPointInfo.OnlyWebUsePreviousStep != 0 {
-			updateColumns := make(map[string]interface{}, 0)
-			updateColumns["only_web_use_previous_step"] = panelPointInfo.OnlyWebUsePreviousStep
-			updatePanelPointByCondition(tx, map[string]interface{}{"only_web_use_previous_step = ?": panelPointInfo.Id}, updateColumns)
-		}
+
 		// 当前节点所包含的所有关系信息
 		selectPreviousStepConditionMap := make(map[string]interface{}, 0)
 		selectPreviousStepConditionMap["point_id = ?"] = panelPointInfo.Id

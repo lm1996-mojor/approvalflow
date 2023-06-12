@@ -8,6 +8,7 @@ import (
 type Participant struct {
 	req.CommonModel
 	ObjId          int64  `json:"objId,omitempty"`          // 参与者id
+	ObjName        string `json:"objName,omitempty"`        // 参与者名称
 	PointValueId   int64  `json:"pointValueId,omitempty"`   // 节点值id
 	OrderNo        int64  `json:"orderNo,omitempty"`        // 参与者顺序
 	ApprovalResult int8   `json:"approvalResult,omitempty"` // 审批结果
@@ -16,7 +17,7 @@ type Participant struct {
 
 // 定义列
 func (c *Participant) allColumn() []string {
-	columns := []string{"obj_id", "point_value_id", "order_no", "approval_result", "opinions"}
+	columns := []string{"obj_id", "obj_name", "point_value_id", "order_no", "approval_result", "opinions"}
 	commonMdl := req.CommonModel{}
 	columns = append(columns, commonMdl.GetCommonModelColumns()...)
 	return columns

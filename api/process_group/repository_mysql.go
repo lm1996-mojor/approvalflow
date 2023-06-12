@@ -31,9 +31,6 @@ func (m MysqlRepository) SelectPageProcessGroupsByCondition(db *gorm.DB, mdl Que
 	if mdl.Search != "" || len(mdl.Search) > 0 {
 		db = db.Where("group_name like ?", "%"+mdl.Search+"%")
 	}
-	if mdl.BusinessCode != "" {
-		db = db.Where("business_code = ?", mdl.BusinessCode)
-	}
 	db = db.Where("client_id = ?", mdl.ClientId)
 	db = db.Where("app_code = ?", mdl.AppCode)
 	db = db.Count(&total)
@@ -80,9 +77,6 @@ func (m MysqlRepository) DeleteProcessGroupsById(tx *gorm.DB, ids []int64) {
 func (m MysqlRepository) SelectProcessGroupsList(db *gorm.DB, mdl QueryListMdl) (processGroupsDetail []ProcessGroupsDetail) {
 	var processGroupsInfoList []model.ProcessGroups
 	db = db.Table(ProcessGroups.TableName())
-	if mdl.BusinessCode != "" {
-		db = db.Where("business_code = ?", mdl.BusinessCode)
-	}
 	db = db.Where("client_id = ?", mdl.ClientId)
 	db = db.Where("app_code = ?", mdl.AppCode)
 	db.Select(ProcessGroups.GetAllColumn()).Scan(&processGroupsInfoList)

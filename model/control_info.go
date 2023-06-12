@@ -24,6 +24,7 @@ type ControlInfo struct {
 
 // 定义列
 func (c *ControlInfo) allColumn() []string {
+
 	columns := []string{"parent_id", "tab_id", "owner_type", "cn_name", "en_name", "ctl_code", "enable",
 		"required", "field_name", "component_type", "value_type", "props", "order_no", "is_default"}
 	commonMdl := req.CommonModel{}
