@@ -6,17 +6,17 @@ import (
 
 type ProcessValue struct {
 	req.CommonModel
-	AppCode      string `json:"appCode,omitempty"`      // 应用编码
-	BusinessCode string `json:"businessCode,omitempty"` // 业务编码
-	ClientId     int64  `json:"-,omitempty"`            // 租户id
-	ProcessId    int64  `json:"processId,omitempty"`    // 流程id
-	ApprovalCode string `json:"approvalCode,omitempty"` // 审批编号(32位)
-	ProcessRate  uint8  `json:"processRate,omitempty"`  // 流程结果进度（未开始、进行中、通过、退回、驳回）
+	AppCode       string `json:"appCode,omitempty"`       // 应用编码
+	ClientId      int64  `json:"-,omitempty"`             // 租户id
+	ProcessId     int64  `json:"processId,omitempty"`     // 流程id
+	ApprovalTitle string `json:"approvalTitle,omitempty"` // 审批标题
+	ApprovalCode  string `json:"approvalCode,omitempty"`  // 审批编号(32位)
+	ProcessRate   uint8  `json:"processRate,omitempty"`   // 流程结果进度（1 同意 2退回 3驳回 4审批中 5待执行 6无操作 7 撤销）
 }
 
 // 定义列
 func (c *ProcessValue) allColumn() []string {
-	columns := []string{"app_code", "business_code", "client_id", "process_id", "approval_code", "process_rate"}
+	columns := []string{"app_code", "client_id", "process_id", "approval_title", "approval_code", "process_rate"}
 	commonMdl := req.CommonModel{}
 	columns = append(columns, commonMdl.GetCommonModelColumns()...)
 	return columns

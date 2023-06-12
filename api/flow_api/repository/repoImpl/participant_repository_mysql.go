@@ -34,16 +34,19 @@ func (m ParticipantRepositoryImpl) BatchInsertParticipantInfo(tx *gorm.DB, point
 	return participantInfos
 }
 
-// SelectParticipantListByPointValueId 根据节点值id查询参与人列表
+// SelectParticipantListByPointValueId 根据节点值id和指定条件查询参与人列表
 func (m ParticipantRepositoryImpl) SelectParticipantListByPointValueId(db *gorm.DB, pointValueId int64, conditionMap map[string]interface{}) (participantList []model.Participant) {
-	//TODO implement me
-	panic("implement me")
-}
-
-// SelectMaxParticipantByPointValueId 根据节点值id查询该节点中最终参与人信息
-func (m ParticipantRepositoryImpl) SelectMaxParticipantByPointValueId(db *gorm.DB, pointValueId int64) (participantList []model.Participant) {
-	//TODO implement me
-	panic("implement me")
+	db = db.Table(common.Participant.TableName())
+	if conditionMap != nil {
+		for k, v := range conditionMap {
+			db = db.Where(k, v)
+		}
+	}
+	if pointValueId != 0 {
+		db = db.Where("point_value_id = ?", pointValueId)
+	}
+	db.Select(common.Participant.GetAllColumn()).Scan(&participantList)
+	return participantList
 }
 
 // UpdateParticipantInfo 更新参与人数据
@@ -60,7 +63,7 @@ func (m ParticipantRepositoryImpl) UpdateParticipantInfo(tx *gorm.DB, participan
 // DeleteParticipantInfo 删除参与人数据
 func (m ParticipantRepositoryImpl) DeleteParticipantInfo(tx *gorm.DB, participantList []model.Participant) bool {
 	for _, detail := range participantList {
-		if err := tx.Table(common.Participant.TableName()).Where("id = ?", detail.Id).Delete(common.Participant).Error; err != nil {
+		if err := tx.Table(common.Participant.TableName()).Where("id = ?", detail.Id).Delete(&common.Participant).Error; err != nil {
 			log.Error("删除参与人信息错误: " + err.Error())
 			return false
 		}

@@ -61,7 +61,6 @@ func (m MysqlRepository) InsertProcess(tx *gorm.DB, info model.Process) int64 {
 	var panelPointInfoEnd model.PanelPoint
 	panelPointInfoEnd.PointType = 6
 	panelPointInfoEnd.PointName = "结束节点"
-	panelPointInfoEnd.OnlyWebUsePreviousStep = panelPointInfoStart.Id
 	panelPointInfoEnd.ProcessId = info.Id
 	if err := tx.Table(PanelPoint.TableName()).Create(&panelPointInfoEnd).Error; err != nil {
 		log.Error("新增流程结束节点信息出错")

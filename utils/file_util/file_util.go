@@ -7,6 +7,7 @@ import (
 	"sync"
 
 	"five.com/lk_flow/api/flow_api/_const"
+	"five.com/lk_flow/api/flow_api/api_model"
 	"five.com/technical_center/core_library.git/log"
 )
 
@@ -18,6 +19,7 @@ import (
 //
 // @Parma srcData 需要转换的数据
 func ObjDataToJsonFile(path string, fileName string, srcData interface{}) error {
+
 	err2 := checkParams(path, fileName)
 	if err2 != nil {
 		return err2
@@ -25,10 +27,11 @@ func ObjDataToJsonFile(path string, fileName string, srcData interface{}) error 
 	if srcData == nil {
 		return errors.New("请指定数据对象")
 	}
+	path = _const.APPROVAL_DATA_FILE_SAVE_PATH_PERFIX + path
 	// 创建文件(无论结果如何该文件夹都会存在)
 	CreateDir(path)
 	// 创建文件
-	filePtr, err := os.Create(_const.APPROVAL_DATA_FILE_SAVE_PATH_PERFIX + _const.APPROVAL_DATA_FILE_SAVE_PATH_PERFIX + path + "/" + fileName + ".json")
+	filePtr, err := os.Create(path + "/" + fileName + ".json")
 	if err != nil {
 		log.Error("文件创建错误")
 		return err
@@ -53,19 +56,19 @@ func ObjDataToJsonFile(path string, fileName string, srcData interface{}) error 
 // @Parma filename 文件名称
 //
 // @Parma obj 承载数据的对象
-func ReaderJsonFileToObj(path, fileName string, obj interface{}) (interface{}, error) {
+func ReaderJsonFileToObj(path, fileName string, obj api_model.ApprovalParams) (api_model.ApprovalParams, error) {
 	err2 := checkParams(path, fileName)
 	if err2 != nil {
-		return nil, err2
+		return api_model.ApprovalParams{}, err2
 	}
 	bytes, err := os.ReadFile(_const.APPROVAL_DATA_FILE_SAVE_PATH_PERFIX + path + "/" + fileName + ".json")
 	if err != nil {
-		return nil, err
+		return api_model.ApprovalParams{}, err
 	}
 	//反向解码并给到实例
 	err = json.Unmarshal(bytes, &obj)
 	if err != nil {
-		return nil, err
+		return api_model.ApprovalParams{}, err
 	}
 	return obj, nil
 }
@@ -115,8 +118,9 @@ func RemoveJsonFile(path, fileName string) {
 	if err != nil {
 		panic("删除json文件错误: " + err.Error())
 	}
-	err = os.Remove(path)
+	err = os.Remove(_const.APPROVAL_DATA_FILE_SAVE_PATH_PERFIX + path)
 	if err != nil {
+		log.Error(err.Error())
 		panic("删除指定文件夹错误: " + err.Error())
 	}
 }

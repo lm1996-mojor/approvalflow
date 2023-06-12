@@ -1,0 +1,199 @@
+{
+    "id": 4,
+    "deletedAt": null,
+    "appCode": "APP280373000",
+    "processId": 54,
+    "approvalTitle": "熊猫8发起的加班",
+    "approvalCode": "LK9B11A8C2B60540048ED0DE627B49EDBD",
+    "processRate": 4,
+    "ctlValues": [
+        {
+            "deletedAt": null,
+            "approvalCode": "LK9B11A8C2B60540048ED0DE627B49EDBD",
+            "ctlId": 47,
+            "ctlValue": "熊猫8"
+        },
+        {
+            "deletedAt": null,
+            "approvalCode": "LK9B11A8C2B60540048ED0DE627B49EDBD",
+            "ctlId": 48,
+            "ctlValue": "55555"
+        }
+    ],
+    "pointDetails": [
+        {
+            "id": 25,
+            "deletedAt": null,
+            "approvalCode": "LK9B11A8C2B60540048ED0DE627B49EDBD",
+            "pointId": 261,
+            "pointRate": 1,
+            "nextStep": 263,
+            "nextStepType": 1,
+            "pointType": 5,
+            "examineType": 0,
+            "pointName": "",
+            "participantInfos": [
+                {
+                    "id": 22,
+                    "deletedAt": null,
+                    "objId": 1,
+                    "objName": "张三",
+                    "pointValueId": 25,
+                    "orderNo": 1,
+                    "approvalResult": 1,
+                    "opinions": "发起人节点自行通过"
+                }
+            ]
+        },
+        {
+            "id": 26,
+            "deletedAt": null,
+            "approvalCode": "LK9B11A8C2B60540048ED0DE627B49EDBD",
+            "pointId": 263,
+            "pointRate": 4,
+            "nextStep": 271,
+            "nextStepType": 1,
+            "isCurrentPoint": true,
+            "pointType": 1,
+            "examineType": 1,
+            "pointName": "",
+            "participantInfos": [
+                {
+                    "id": 23,
+                    "deletedAt": null,
+                    "objId": 2,
+                    "objName": "李四",
+                    "pointValueId": 26,
+                    "orderNo": 1,
+                    "approvalResult": 4
+                }
+            ]
+        },
+        {
+            "id": 27,
+            "deletedAt": null,
+            "approvalCode": "LK9B11A8C2B60540048ED0DE627B49EDBD",
+            "pointId": 271,
+            "pointRate": 5,
+            "nextStep": 264,
+            "nextStepType": 2,
+            "pointType": 1,
+            "examineType": 1,
+            "pointName": "",
+            "participantInfos": [
+                {
+                    "id": 24,
+                    "deletedAt": null,
+                    "objId": 3,
+                    "objName": "王五",
+                    "pointValueId": 27,
+                    "orderNo": 1,
+                    "approvalResult": 5
+                }
+            ]
+        },
+        {
+            "id": 28,
+            "deletedAt": null,
+            "approvalCode": "LK9B11A8C2B60540048ED0DE627B49EDBD",
+            "pointId": 264,
+            "pointRate": 5,
+            "nextStep": 273,
+            "nextStepType": 1,
+            "pointType": 2,
+            "examineType": 1,
+            "pointName": "",
+            "participantInfos": [
+                {
+                    "id": 25,
+                    "deletedAt": null,
+                    "objId": 4,
+                    "objName": "赵六",
+                    "pointValueId": 28,
+                    "orderNo": 1,
+                    "approvalResult": 5
+                }
+            ]
+        },
+        {
+            "id": 29,
+            "deletedAt": null,
+            "approvalCode": "LK9B11A8C2B60540048ED0DE627B49EDBD",
+            "pointId": 273,
+            "pointRate": 5,
+            "nextStep": 272,
+            "nextStepType": 1,
+            "pointType": 1,
+            "examineType": 1,
+            "pointName": "",
+            "participantInfos": [
+                {
+                    "id": 26,
+                    "deletedAt": null,
+                    "objId": 5,
+                    "objName": "孙七",
+                    "pointValueId": 29,
+                    "orderNo": 1,
+                    "approvalResult": 5
+                }
+            ]
+        },
+        {
+            "id": 30,
+            "deletedAt": null,
+            "approvalCode": "LK9B11A8C2B60540048ED0DE627B49EDBD",
+            "pointId": 272,
+            "pointRate": 5,
+            "nextStep": 274,
+            "nextStepType": 2,
+            "pointType": 1,
+            "examineType": 1,
+            "pointName": "",
+            "participantInfos": [
+                {
+                    "id": 27,
+                    "deletedAt": null,
+                    "objId": 6,
+                    "objName": "周八",
+                    "pointValueId": 30,
+                    "orderNo": 1,
+                    "approvalResult": 5
+                }
+            ]
+        },
+        {
+            "id": 31,
+            "deletedAt": null,
+            "approvalCode": "LK9B11A8C2B60540048ED0DE627B49EDBD",
+            "pointId": 274,
+            "pointRate": 5,
+            "nextStep": 262,
+            "nextStepType": 6,
+            "pointType": 2,
+            "examineType": 1,
+            "pointName": "",
+            "participantInfos": [
+                {
+                    "id": 28,
+                    "deletedAt": null,
+                    "objId": 7,
+                    "objName": "吴九",
+                    "pointValueId": 31,
+                    "orderNo": 1,
+                    "approvalResult": 5
+                }
+            ]
+        },
+        {
+            "id": 32,
+            "deletedAt": null,
+            "approvalCode": "LK9B11A8C2B60540048ED0DE627B49EDBD",
+            "pointId": 262,
+            "pointRate": 5,
+            "pointType": 6,
+            "examineType": 0,
+            "pointName": "",
+            "participantInfos": []
+        }
+    ]
+}
