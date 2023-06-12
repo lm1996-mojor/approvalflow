@@ -92,7 +92,7 @@ func (m ProcessValueRepositoryImpl) SelectApprovalOfUserParticipation(db *gorm.D
 	db = db.Where("prv.deleted_at is null")
 	db = db.Where("prv.process_rate != ?", 6)
 	if params.UserId != 0 {
-		db = db.Where("pp.obj_id = ?", params)
+		db = db.Where("pp.obj_id = ?", params.UserId)
 	}
 	if params.ProcessId != 0 {
 		db = db.Where("prv.process_id = ?", params.ProcessId)
@@ -162,7 +162,7 @@ func (m ProcessValueRepositoryImpl) SelectProcessValueListByApprovalList(db *gor
 	db = db.Where("app_code = ?", params.AppCode)
 	db = db.Where("client_id = ?", params.ClientId)
 	db = db.Where("approval_code in (?)", approvalCodeList)
-	db = db.Where("prv.deleted_at is null")
+	db = db.Where("deleted_at is null")
 	if params.ProcessId != 0 {
 		db = db.Where("process_id = ?", params.ProcessId)
 	}

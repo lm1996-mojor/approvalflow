@@ -117,10 +117,22 @@ endloop:
 					*/
 					switch params.Participant.ApprovalResult {
 					case 2: //退回： 退回到上一个审批节点，并且要有退回意见,且流程不停止，但不进入下一个节点，修改包含退回到的节点与当前节点之间的所有节点进度及参与人的审批结果，并将数据保存至缓存文件中
+						checkPointList := make([]api_model.PointDetail, 0)
 						ids := make([]int64, 0)
 						var backId int64
+						currentPointValue := engine.ObtainCurrentPointValue(approvalParams.PointDetails)
+						if currentPointValue.Id != params.NodeDetailId {
+							return rest.FailCustom(500, "请确认当前的节点是否符合规范", rest.ERROR)
+						}
 						// 判别是退回到上一个审批节点，还是退回到其他节点
 						if params.BackNodeId != 0 { // 退回至其他节点
+							for _, id := range params.BackIntervalNodeIds {
+								checkPointList = append(checkPointList, engine.ObtainPointValueInfo(approvalParams.PointDetails, id))
+							}
+							result := checkApprovalPointDataConformanceToSpecifications(checkPointList, true)
+							if !reflect.DeepEqual(result, rest.Result{}) {
+								return result
+							}
 							ids = append(ids, params.BackIntervalNodeIds...)
 							ids = append(ids, params.NodeDetailId)
 							ids = append(ids, params.BackNodeId)
@@ -129,6 +141,12 @@ endloop:
 							ids = append(ids, params.NodeDetailId)
 							ids = append(ids, engine.FindThePreviousApprovalNodeOfTheSpecifiedNode(params.NodeDetailId, approvalParams.PointDetails)...)
 							backId = engine.FindPreviousApprovalId(params.NodeDetailId, approvalParams.PointDetails)
+						}
+						checkPointList = make([]api_model.PointDetail, 0)
+						checkPointList = append(checkPointList, engine.ObtainPointValueInfo(approvalParams.PointDetails, backId))
+						result := checkApprovalPointDataConformanceToSpecifications(checkPointList, false)
+						if !reflect.DeepEqual(result, rest.Result{}) {
+							return result
 						}
 						// 重置数据状态
 						approvalParams.PointDetails = engine.ResetBatchPointApprovalStatus(approvalParams.PointDetails, ids)
@@ -495,4 +513,25 @@ func getApprovalParams(path string) (approvalParams api_model.ApprovalParams) {
 	// 断言类型
 	approvalParams = obj
 	return approvalParams
+}
+
+// 检查审批节点的数据是否符合规范
+// isIncludeCCRecipient：是否需要包含抄送节点检查
+func checkApprovalPointDataConformanceToSpecifications(pointList []api_model.PointDetail, isIncludeCCRecipient bool) rest.Result {
+	for _, pointValueInfo := range pointList {
+		if reflect.DeepEqual(pointValueInfo, api_model.PointDetail{}) {
+			return rest.FailCustom(500, "退回的节点不规范", rest.ERROR)
+		}
+		if isIncludeCCRecipient {
+			// 包含抄送节点检查
+			if (pointValueInfo.PointType != 1 && pointValueInfo.PointType != 2) || ((pointValueInfo.PointType == 2 || pointValueInfo.PointType == 1) && pointValueInfo.PointRate != 1) {
+				return rest.FailCustom(500, "退回的节点不规范", rest.ERROR)
+			}
+		} else { // 不包含抄送节点检查
+			if (pointValueInfo.PointType != 1) || (pointValueInfo.PointType == 1 && pointValueInfo.PointRate != 1) {
+				return rest.FailCustom(500, "退回的节点不规范", rest.ERROR)
+			}
+		}
+	}
+	return rest.Result{}
 }

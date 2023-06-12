@@ -181,6 +181,16 @@ func ObtainCurrentPointValue(srcPointData []api_model.PointDetail) (currentNodeI
 	panic("服务器错误")
 }
 
+// ObtainPointValueInfo 获取指定节点信息
+func ObtainPointValueInfo(srcPointData []api_model.PointDetail, pointValueId int64) (nodeInfo api_model.PointDetail) {
+	for _, datum := range srcPointData {
+		if datum.Id == pointValueId {
+			nodeInfo = datum
+		}
+	}
+	return nodeInfo
+}
+
 // DropAllNodesExceptTheInitiatorNode 删除流程中除发起人以外的节点
 func DropAllNodesExceptTheInitiatorNode(srcPointData []api_model.PointDetail) (newPointDetailList []api_model.PointDetail) {
 	for _, datum := range srcPointData {
@@ -227,6 +237,8 @@ func CheckIfThereAreAnyReceivedByTheUserInTheApproval(pointValueList []api_model
 				if detail.PointRate == 1 {
 					return true
 				}
+				// 已经找到但是没有发送过消息,没有必要再去找
+				return false
 			}
 		}
 	}

@@ -73,9 +73,9 @@ func DetermineWhetherTheUserHasBeenApproved(participantInfoList []model.Particip
 	for _, participant := range participantInfoList {
 		if participant.ObjId == userId {
 			if participant.ApprovalResult < 4 {
-				return false
+				return true
 			}
 		}
 	}
-	return true
+	return false
 }
